@@ -5,7 +5,7 @@ var app = express();
 
 var port =process.env.PORT || 80;
 
-app.use("/",express.static("./SOS1920-28/public"));
+app.use("/",express.static("./public"));
 
 app.get("/cool",(request,response) => {
 	response.send("<html>"+cool()+"</html>");
