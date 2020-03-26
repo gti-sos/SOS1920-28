@@ -13,8 +13,12 @@ app.use("/",express.static("./public"));
 app.get("/cool",(request,response) => {
 	response.send("<html>"+cool()+"</html>");
 });
+const BASE_API_URL = "/api/v1";
 
-var gce = [
+
+gce = [];
+app.get(BASE_API_URL+"/gce/loadInitialData",(req,res) =>{
+ var examples_gce = [
 	{ 
 		country: "United States of America",
 		year: 2010,
@@ -133,7 +137,13 @@ var gce = [
 		gce_cars: 1817000
 	}
 ];
-var ppa_per_capitas = [
+ gce=examples_gce;
+ res.send(JSON.stringify(gce,null,2));
+});
+
+ppa_per_capitas = [];
+app.get(BASE_API_URL+"/ppa/loadInitialData",(req,res) =>{
+ var examples_ppa_per_capitas = [
 	{ 
 		country: "United States of America",
 		year: 2017,	
@@ -175,7 +185,13 @@ var ppa_per_capitas = [
 		
 	}
 ];
-var ec =[
+ ppa_per_capitas=examples_ppa_per_capitas;
+ res.send(JSON.stringify(ppa_per_capitas,null,2));
+});
+
+ec = [];
+app.get(BASE_API_URL+"/ec/loadInitialData",(req,res) =>{
+ var examples_ec =[
 	{
 		country: "Sweden",
 		year: 2014,
@@ -213,7 +229,10 @@ var ec =[
 	}
 	
 ];
-const BASE_API_URL = "/api/v1";
+ ec=examples_ec;
+ res.send(JSON.stringify(ec,null,2));
+});
+
 
 // GET 
 
