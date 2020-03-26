@@ -175,7 +175,44 @@ var ppa_per_capitas = [
 		
 	}
 ];
-
+var ec =[
+	{
+		country: "Sweden",
+		year: 2014,
+		eev:8076,
+		ms:1.53,
+		eec:135002
+	},
+	{
+		country: "France",
+		year: 2014,
+		eev:43605,
+		ms:1.2,
+		eec:489944
+	},
+	{
+		country: "United Kingdom",
+		year: 2014,
+		eev:24500,
+		ms:1.1,
+		eec:345068
+	},
+	{
+		country: "United States",
+		year: 2014,
+		eev:291332,
+		ms:0.72,
+		eec:172000
+	},
+	{
+		country: "China",
+		year: 2014,
+		eev:83198,
+		ms:0.23,
+		eec:28619
+	}
+	
+];
 const BASE_API_URL = "/api/v1";
 
 // GET 
@@ -190,6 +227,10 @@ app.get(BASE_API_URL+"/ppa", (req,res) =>{
 	console.log("Data sent:"+JSON.stringify(ppa_per_capitas,null,2));
 });
 
+app.get(BASE_API_URL+"/ec", (req,res) =>{
+	res.send(JSON.stringify(ec,null,2));
+	console.log("Data sent:"+JSON.stringify(ec,null,2));
+});
 // POST 
 app.post(BASE_API_URL+"/gce",(req,res) =>{
 	var newGCE = req.body;
@@ -211,7 +252,17 @@ app.post(BASE_API_URL+"/ppa",(req,res) =>{
 		res.sendStatus(201,"CREATED");
 	}
 });
-
+app.post(BASE_API_URL+"/ec",(req,res) =>{
+	
+	var newEC = req.body;
+	
+	if((newEC == "") || (newEC.country == null)||(newEC.year == null)||(newEC.eev == null)||(newEC.ms == null)||(newEC.eec == null)){
+		res.sendStatus(400,"BAD REQUEST");
+	} else {
+		ec.push(newEC); 	
+		res.sendStatus(201,"CREATED");
+	}
+});
 // DELETE 
 app.delete(BASE_API_URL+"/gce", (req,res) =>{
 	var newGCE = req.body;
@@ -221,6 +272,11 @@ app.delete(BASE_API_URL+"/gce", (req,res) =>{
 app.delete(BASE_API_URL+"/ppa", (req,res) =>{
 	var newPPA = req.body;
 	ppa_per_capitas = newPPA;
+	res.send("DELETED DATA BASE");
+});
+app.delete(BASE_API_URL+"/ec", (req,res) =>{
+	var newEC = req.body;
+	ec = newEC;
 	res.send("DELETED DATA BASE");
 });
 	
@@ -247,6 +303,21 @@ app.get(BASE_API_URL+"/ppa/:country", (req,res)=>{
 	var country = req.params.country;
 	
 	var filteredCountry = ppa_per_capitas.filter((c) => {
+		return (c.country == country);
+	});
+	
+	
+	if(filteredCountry.length >= 1){
+		res.send(filteredCountry);
+	}else{
+		res.sendStatus(404,"COUNTRY NOT FOUND");
+	}
+});
+app.get(BASE_API_URL+"/ec/:country", (req,res)=>{
+	
+	var country = req.params.country;
+	
+	var filteredCountry = ec.filter((c) => {
 		return (c.country == country);
 	});
 	
@@ -309,6 +380,31 @@ app.put(BASE_API_URL+"/ppa/:country/:year", (req,res)=>{
 		res.sendStatus(404,"Data Not Found");
 	}
 });
+	app.put(BASE_API_URL+"/ec/:country/:year", (req,res)=>{
+	
+	var country = req.params.country;
+	var year = req.params.year;
+	var newCountryYear= req.body;
+	var filteredCountryYear = ec.filter((c) => {
+		return (c.country == country&&c.year==year);
+	});
+	if(filteredCountryYear.length==1){
+		var updateData = ec.map((e) => {
+			var upData = e;
+			if(e.country==country && e.year==year){
+				for(var p in newCountryYear){
+					upData[p] = newCountryYear[p];
+				}
+			}
+			return(updateData);
+		});
+		
+		ec.push(updateData);
+		res.sendStatus(200,"Data Modified");
+	}else{
+		res.sendStatus(404,"Data Not Found");
+	}
+});
 // DELETE yyyy/XXX
 
 app.delete(BASE_API_URL+"/gce/:country", (req,res)=>{
@@ -347,12 +443,31 @@ app.delete(BASE_API_URL+"/ppa/:country", (req,res)=>{
 	}
 	
 });
-
+app.delete(BASE_API_URL+"/ec/:country", (req,res)=>{
+	
+	var country = req.params.country;
+	
+	var filteredCountry = ec.filter((c) => {
+		return (c.country != country);
+	});
+	
+	
+	if(filteredCountry.length < ec.length){
+		ec = filteredCountry;
+		res.sendStatus(200);
+	}else{
+		res.sendStatus(404,"COUNTRY NOT FOUND");
+	}
+	
+});
 //POST yyyy/xxxx
 app.post(BASE_API_URL+"/gce/:country",(req,res) =>{
 	res.sendStatus(405,"METHOD NOT ALLOWED");
 });
 app.post(BASE_API_URL+"/ppa/:country",(req,res) =>{
+	res.sendStatus(405,"METHOD NOT ALLOWED");
+});
+app.post(BASE_API_URL+"/ec/:country",(req,res) =>{
 	res.sendStatus(405,"METHOD NOT ALLOWED");
 });
 
@@ -361,6 +476,9 @@ app.put(BASE_API_URL+"/gce", (req,res)=>{
 	res.sendStatus(405,"METHOD NOT ALLOWED");
 });
 app.put(BASE_API_URL+"/ppa", (req,res)=>{
+	res.sendStatus(405,"METHOD NOT ALLOWED");
+});
+app.put(BASE_API_URL+"/ec", (req,res)=>{
 	res.sendStatus(405,"METHOD NOT ALLOWED");
 });
 
