@@ -191,61 +191,180 @@ app.get(BASE_API_URL+"/ppa", (req,res) =>{
 });
 
 // POST 
-
 app.post(BASE_API_URL+"/gce",(req,res) =>{
-	
-	var newContact = req.body;
-	
-	if((newContact == "") || (newContact.name == null)){
+	var newGCE = req.body;
+	if((newGCE == "") || (newGCE.country == null)||(newGCE.year == null)||(newGCE.gce_country == null)||(newGCE.gce_per_capita == null)||(newGCE.gce_cars == null)){
 		res.sendStatus(400,"BAD REQUEST");
 	} else {
-		contacts.push(newContact); 	
+		gce.push(newGCE); 	
+		res.sendStatus(201,"CREATED");
+	}
+});
+app.post(BASE_API_URL+"/ppa",(req,res) =>{
+	
+	var newPPA = req.body;
+	
+	if((newPPA == "") || (newPPA.country == null)||(newPPA.year == null)||(newPPA.aas_gross == null)||(newPPA.aas_net == null)||(newPPA.ppa_per_capita == null)){
+		res.sendStatus(400,"BAD REQUEST");
+	} else {
+		ppa_per_capitas.push(newPPA); 	
 		res.sendStatus(201,"CREATED");
 	}
 });
 
 // DELETE 
-
+app.delete(BASE_API_URL+"/gce", (req,res) =>{
+	var newGCE = req.body;
+	gce = newGCE;
+	res.send("DELETED DATA BASE");
+});
+app.delete(BASE_API_URL+"/ppa", (req,res) =>{
+	var newPPA = req.body;
+	ppa_per_capitas = newPPA;
+	res.send("DELETED DATA BASE");
+});
+	
 // GET yyyy/XXX
 
-app.get(BASE_API_URL+"/gce/:name", (req,res)=>{
+app.get(BASE_API_URL+"/gce/:country", (req,res)=>{
 	
-	var name = req.params.name;
+	var country = req.params.country;
 	
-	var filteredContacts = contacts.filter((c) => {
-		return (c.name == name);
+	var filteredCountry = gce.filter((c) => {
+		return (c.country == country);
 	});
 	
 	
-	if(filteredContacts.length >= 1){
-		res.send(filteredContacts[0]);
+	if(filteredCountry.length >= 1){
+		res.send(filteredCountry);
 	}else{
-		res.sendStatus(404,"CONTACT NOT FOUND");
+		res.sendStatus(404,"COUNTRY NOT FOUND");
+	}
+});
+
+app.get(BASE_API_URL+"/ppa/:country", (req,res)=>{
+	
+	var country = req.params.country;
+	
+	var filteredCountry = ppa_per_capitas.filter((c) => {
+		return (c.country == country);
+	});
+	
+	
+	if(filteredCountry.length >= 1){
+		res.send(filteredCountry);
+	}else{
+		res.sendStatus(404,"COUNTRY NOT FOUND");
 	}
 });
 
 // PUT yyyy/XXX
-
+app.put(BASE_API_URL+"/gce/:country/:year", (req,res)=>{
+	
+	var country = req.params.country;
+	var year = req.params.year;
+	var newCountryYear= req.body;
+	var filteredCountryYear = gce.filter((c) => {
+		return (c.country == country&&c.year==year);
+	});
+	if(filteredCountryYear.length==1){
+		var updateData = gce.map((e) => {
+			var upData = e;
+			if(e.country==country && e.year==year){
+				for(var p in newCountryYear){
+					upData[p] = newCountryYear[p];
+				}
+			}
+			return(updateData);
+		});
+		
+		gce.push(updateData);
+		res.sendStatus(200,"Data Modified");
+	}else{
+		res.sendStatus(404,"Data Not Found");
+	}
+});
+app.put(BASE_API_URL+"/ppa/:country/:year", (req,res)=>{
+	
+	var country = req.params.country;
+	var year = req.params.year;
+	var newCountryYear= req.body;
+	var filteredCountryYear = ppa_per_capitas.filter((c) => {
+		return (c.country == country&&c.year==year);
+	});
+	if(filteredCountryYear.length==1){
+		var updateData = ppa_per_capitas.map((e) => {
+			var upData = e;
+			if(e.country==country && e.year==year){
+				for(var p in newCountryYear){
+					upData[p] = newCountryYear[p];
+				}
+			}
+			return(updateData);
+		});
+		
+		ppa_per_capitas.push(updateData);
+		res.sendStatus(200,"Data Modified");
+	}else{
+		res.sendStatus(404,"Data Not Found");
+	}
+});
 // DELETE yyyy/XXX
 
-app.delete(BASE_API_URL+"/gce/:name", (req,res)=>{
+app.delete(BASE_API_URL+"/gce/:country", (req,res)=>{
 	
-	var name = req.params.name;
+	var country = req.params.country;
 	
-	var filteredContacts = contacts.filter((c) => {
-		return (c.name != name);
+	var filteredCountry = gce.filter((c) => {
+		return (c.country != country);
 	});
 	
 	
-	if(filteredContacts.length < contacts.length){
-		contacts = filteredContacts;
+	if(filteredCountry.length < gce.length){
+		gce = filteredCountry;
 		res.sendStatus(200);
 	}else{
-		res.sendStatus(404,"CONTACT NOT FOUND");
+		res.sendStatus(404,"COUNTRY NOT FOUND");
 	}
 	
 	
 });
+
+app.delete(BASE_API_URL+"/ppa/:country", (req,res)=>{
+	
+	var country = req.params.country;
+	
+	var filteredCountry = ppa_per_capitas.filter((c) => {
+		return (c.country != country);
+	});
+	
+	
+	if(filteredCountry.length < ppa_per_capitas.length){
+		ppa_per_capitas = filteredCountry;
+		res.sendStatus(200);
+	}else{
+		res.sendStatus(404,"COUNTRY NOT FOUND");
+	}
+	
+});
+
+//POST yyyy/xxxx
+app.post(BASE_API_URL+"/gce/:country",(req,res) =>{
+	res.sendStatus(405,"METHOD NOT ALLOWED");
+});
+app.post(BASE_API_URL+"/ppa/:country",(req,res) =>{
+	res.sendStatus(405,"METHOD NOT ALLOWED");
+});
+
+//PUT yyyy
+app.put(BASE_API_URL+"/gce", (req,res)=>{
+	res.sendStatus(405,"METHOD NOT ALLOWED");
+});
+app.put(BASE_API_URL+"/ppa", (req,res)=>{
+	res.sendStatus(405,"METHOD NOT ALLOWED");
+});
+
+
 
 app.listen(port,() => {
 		console.log("Server ready to use    "
