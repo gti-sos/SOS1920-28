@@ -1,12 +1,32 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cool = require("cool-ascii-faces");
+const dataStore = require("nedb");
+const path = require("path");
 
 var app = express();
 
 app.use(bodyParser.json());
 
-var port = process.env.PORT || 80;
+const port = process.env.PORT || 80;
+//GCE
+const dbFileName = path.join(__dirname,"gce.db");
+const db = new dataStore({
+                filename: dbFileName,
+				autoload: true
+});
+//PPA
+const dbFileName1 = path.join(__dirname,"ppa.db");
+const db1 = new dataStore({
+                filename: dbFileName1,
+				autoload: true
+});
+//EC
+const dbFileName2 = path.join(__dirname,"ec.db");
+const db2 = new dataStore({
+                filename: dbFileName2,
+				autoload: true
+});
 
 app.use("/",express.static("./public"));
 
@@ -16,9 +36,8 @@ app.get("/cool",(request,response) => {
 const BASE_API_URL = "/api/v1";
 
 
-gce = [];
-app.get(BASE_API_URL+"/gce/loadInitialData",(req,res) =>{
- var examples_gce = [
+
+var initialgce = [
 	{ 
 		country: "United States of America",
 		year: 2010,
@@ -137,13 +156,18 @@ app.get(BASE_API_URL+"/gce/loadInitialData",(req,res) =>{
 		gce_cars: 1817000
 	}
 ];
- gce=examples_gce;
- res.send(JSON.stringify(gce,null,2));
+app.get(BASE_API_URL+"/gce/loadInitialData",(req,res) =>{
+	 console.log("New GET .../loadInitialData");
+	 db.remove({}, { multi: true }, function (err, numRemoved) {
+	 });	
+	 db.insert(initialgce);
+	 res.sendStatus(200);
+	
+	console.log("Initial Gce loaded:"+JSON.stringify(initialgce,null,2));
+ 
 });
 
-ppa_per_capitas = [];
-app.get(BASE_API_URL+"/ppa/loadInitialData",(req,res) =>{
- var examples_ppa_per_capitas = [
+var initialppa = [
 	{ 
 		country: "United States of America",
 		year: 2017,	
@@ -185,13 +209,21 @@ app.get(BASE_API_URL+"/ppa/loadInitialData",(req,res) =>{
 		
 	}
 ];
- ppa_per_capitas=examples_ppa_per_capitas;
- res.send(JSON.stringify(ppa_per_capitas,null,2));
+
+app.get(BASE_API_URL+"/ppa/loadInitialData",(req,res) =>{
+	 console.log("New GET .../loadInitialData");
+	 db1.remove({}, { multi: true }, function (err, numRemoved) {
+	 });	
+	 db1.insert(initialppa);
+	 res.sendStatus(200);
+	
+	console.log("Initial Ppa loaded:"+JSON.stringify(initialppa,null,2));
+ 
 });
 
-ec = [];
-app.get(BASE_API_URL+"/ec/loadInitialData",(req,res) =>{
- var examples_ec =[
+
+
+var initialec =[
 	{
 		country: "Sweden",
 		year: 2014,
@@ -229,26 +261,63 @@ app.get(BASE_API_URL+"/ec/loadInitialData",(req,res) =>{
 	}
 	
 ];
- ec=examples_ec;
- res.send(JSON.stringify(ec,null,2));
+
+app.get(BASE_API_URL+"/ec/loadInitialData",(req,res) =>{
+ console.log("New GET .../loadInitialData");
+ 	db2.remove({}, { multi: true }, function (err, numRemoved) {
+	 });
+	db2.insert(initialec);
+	res.sendStatus(200);
+	
+ console.log("Initial Ec loaded:"+JSON.stringify(initialec,null,2));
 });
 
 
 // GET 
 
 app.get(BASE_API_URL+"/gce", (req,res) =>{
-	res.send(JSON.stringify(gce,null,2));
-	console.log("Data sent:"+JSON.stringify(gce,null,2));
+	console.log("New GET .../gce");
+	
+	db.find({}, (err,gce)=>{
+		
+		gce.forEach((c)=>{ 
+			delete c._id;
+		})
+		
+		res.send(JSON.stringify(gce,null,2));
+		
+		console.log("Data sent:"+JSON.stringify(gce,null,2));
+	});
 });
 
 app.get(BASE_API_URL+"/ppa", (req,res) =>{
-	res.send(JSON.stringify(ppa_per_capitas,null,2));
-	console.log("Data sent:"+JSON.stringify(ppa_per_capitas,null,2));
+	console.log("New GET .../ppa");
+	
+	db1.find({}, (err,ppa)=>{
+		
+		ppa.forEach((c)=>{ 
+			delete c._id;
+		})
+		
+		res.send(JSON.stringify(ppa,null,2));
+		
+		console.log("Data sent:"+JSON.stringify(ppa,null,2));
+	});
 });
 
 app.get(BASE_API_URL+"/ec", (req,res) =>{
-	res.send(JSON.stringify(ec,null,2));
-	console.log("Data sent:"+JSON.stringify(ec,null,2));
+	console.log("New GET .../ec");
+	
+	db2.find({}, (err,ec)=>{
+		
+		ec.forEach((c)=>{ 
+			delete c._id;
+		})
+		
+		res.send(JSON.stringify(ec,null,2));
+		
+		console.log("Data sent:"+JSON.stringify(ec,null,2));
+	});
 });
 // POST 
 app.post(BASE_API_URL+"/gce",(req,res) =>{
