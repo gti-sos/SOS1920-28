@@ -6,11 +6,9 @@ const path = require("path");
 const ppaAPI = require(path.join(__dirname,"ppaAPI"));
 const gceAPI = require(path.join(__dirname,"gceAPI"));
 const ecAPI = require(path.join(__dirname,"ecAPI"));
-
-
 const app = express();
-app.use(bodyParser.json());
 
+app.use(bodyParser.json());
 const port = process.env.PORT || 80;
 
 ppaAPI(app);
