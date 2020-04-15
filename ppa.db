@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 {"country":"United States of America","year":2017,"aas_gross":52988,"aas_net":39209,"ppa_per_capita":59531,"_id":"0R2ZoYnygkemfbkw"}
 {"country":"Spain","year":2017,"aas_gross":404519999999999,"aas_net":31920,"ppa_per_capita":37998,"_id":"75oaRkAqILOSHSvu"}
 {"country":"France","year":2017,"aas_gross":48339,"aas_net":34228,"ppa_per_capita":42850,"_id":"Em6LApM656S7Rvke"}
 {"country":"Spain","year":2019,"aas_gross":40451,"aas_net":31920,"ppa_per_capita":37998,"_id":"FkmuFC0vSfcZytDz"}
 {"country":"Germany","year":2017,"aas_gross":63551,"aas_net":38207,"ppa_per_capita":50638,"_id":"Noa4zNbSiqFW6IKR"}
 {"country":"United Kingdom","year":2017,"aas_gross":54319,"aas_net":41599,"ppa_per_capita":43269,"_id":"zb2N7nkWWJXI70pw"}
+=======
+{"country":"United Kingdom","year":2017,"aas_gross":54319,"aas_net":41599,"ppa_per_capita":43269,"_id":"7vrOJRWxuDpLcPtr"}
+{"country":"United States of America","year":2017,"aas_gross":52988,"aas_net":39209,"ppa_per_capita":59531,"_id":"RoTi58dqmJV19LWr"}
+{"country":"Spain","year":2017,"aas_gross":40451,"aas_net":31920,"ppa_per_capita":37998,"_id":"h1ZnxQTMtP99lyEh"}
+{"country":"Germany","year":2017,"aas_gross":63551,"aas_net":38207,"ppa_per_capita":50638,"_id":"wavpDdqWGAtaksW8"}
+{"country":"France","year":2017,"aas_gross":48339,"aas_net":34228,"ppa_per_capita":42850,"_id":"ydXNQlYrfF2r7ayW"}
+>>>>>>> c1f331ba6b1bea5cf1ac5a999aa285e82a140080
