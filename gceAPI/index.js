@@ -1,4 +1,13 @@
-module.exports = function(){
+module.exports = function(app){
+	const dataStore = require("nedb");
+	const path = require("path");
+	const dbFileName = path.join(__dirname,"gce.db");
+	const db = new dataStore({
+                filename: dbFileName,
+				autoload: true
+});
+	
+	const BASE_API_URL = "/api/v1";
 	
 	var initialgce = [
 	{ 
