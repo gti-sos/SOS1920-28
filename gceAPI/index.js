@@ -1,11 +1,12 @@
 module.exports = function(app){
+	console.log("Registering gce API...");
 	const dataStore = require("nedb");
 	const path = require("path");
 	const dbFileName = path.join(__dirname,"gce.db");
 	const db = new dataStore({
                 filename: dbFileName,
 				autoload: true
-});
+	});
 	
 	const BASE_API_URL = "/api/v1";
 	
@@ -127,7 +128,15 @@ module.exports = function(app){
 		gce_per_capita:5.05,
 		gce_cars: 1817000
 	}
-];
+	];
+	
+	function deleteIDs (gce){
+        gce.forEach( (m) => {
+            delete m._id;
+        });
+    }
+	
+//INITIAL DATA	
 app.get(BASE_API_URL+"/gce/loadInitialData",(req,res) =>{
 	 console.log("New GET .../loadInitialData");
 	 db.remove({}, { multi: true }, function (err, numRemoved) {
@@ -286,7 +295,5 @@ app.put(BASE_API_URL+"/gce/:country/:year", (req,res)=>{
 		}
 	});
 });	
-	
-	
 	
 };
