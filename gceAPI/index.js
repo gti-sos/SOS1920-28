@@ -200,8 +200,8 @@ app.get(BASE_API_URL+"/gce/:country/:year", (req,res)=>{
 	
 	db.find({country: country1, year: Number(year1)}, (err,gce)=>{
 		deleteIDs(gce);
-		res.send(JSON.stringify(gce,null,2));
-		console.log("Data sent:"+JSON.stringify(gce,null,2));
+		res.send(JSON.stringify(gce[0],null,2));
+		console.log("Data sent:"+JSON.stringify(gce[0],null,2));
 	});
 	
 });
@@ -266,24 +266,6 @@ app.delete(BASE_API_URL+"/gce/:country/:year", (req,res)=>{
 //PUT yyyy
 app.put(BASE_API_URL+"/gce", (req,res)=>{
 	res.sendStatus(405,"METHOD NOT ALLOWED");
-});
-// PUT yyyy/XXX
-app.put(BASE_API_URL+"/gce/:country", (req,res)=>{
-	
-	var country1 = req.params.country;
-	var year1 = req.params.year;
-	var body = req.body;
-	
-	db.find({country1,year1}, (err, gce) => {
-		deleteIDs(gce);
-		if(gce.length >= 1){
-			db.update({country: country1,year:year1}, body, (error, numRemoved) => {
-				res.sendStatus(200, "OK");
-			})
-		}else{
-			res.sendStatus(404,"ERROR. Pais no encontrado.");
-		}
-	});
 });	
 // PUT yyyy/XXX/zzz
 app.put(BASE_API_URL+"/gce/:country/:year", (req,res)=>{
