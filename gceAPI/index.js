@@ -150,33 +150,44 @@ app.get(BASE_API_URL+"/gce/loadInitialData",(req,res) =>{
 
 // GET 
 app.get(BASE_API_URL+"/gce", (req,res) =>{
-	console.log("New GET .../gce");
+	console.log("New GET gce");
 	
-	db.find({}, (err,gce)=>{
-		
-		gce.forEach((c)=>{ 
-			delete c._id;
-		})
-		
-		res.send(JSON.stringify(gce,null,2));
-		
-		console.log("Data sent:"+JSON.stringify(gce,null,2));
-	});
-});
+	//if(req.query.country) request["country"] = req.query.country;
+    if(req.query.year) req.query.year = parseInt(req.query.year);
+    if(req.query.gce_country) req.query.gce_country = parseInt(req.query.gce_country);
+    if(req.query.gce_per_capita) req.query.gce_per_capita = parseFloat(req.query.gce_per_capita);
+    if(req.query.gce_cars) req.query.gce_cars = parseInt(req.query.gce_cars);
+	
+	var par = req.query;
+    console.log(par);
+	
+	let offset = null;
+	let limit = null;
+  
+    if (req.query.offset) {
+        offset = parseInt(req.query.offset);
+        delete req.query.offset;
+	}
+    if (req.query.limit) {
+        limit = parseInt(req.query.limit);
+        delete req.query.limit;
+    }  
+	
+	
+	db.find(par).skip(offset).limit(limit).exec((err, gce)=> {
+        deleteIDs(gce);
+        res.send(JSON.stringify(gce,null,2));
+         
+         console.log("Data sent: "+JSON.stringify(gce,null,2));
+        });
+    });
 // GET yyyy/XXX
 
 app.get(BASE_API_URL+"/gce/:country", (req,res)=>{
-	
-	console.log("New GET .../gce");
 	var country1 = req.params.country;
 	db.find({country: country1}, (err,gce)=>{
-		
-		gce.forEach((c)=>{ 
-			delete c._id;
-		})
-		
+		deleteIDs(gce);
 		res.send(JSON.stringify(gce,null,2));
-		
 		console.log("Data sent:"+JSON.stringify(gce,null,2));
 	});
 });
@@ -184,19 +195,15 @@ app.get(BASE_API_URL+"/gce/:country", (req,res)=>{
 // GET yyyy/XXX/zzz
 app.get(BASE_API_URL+"/gce/:country/:year", (req,res)=>{
 	
-	console.log("New GET .../gce");
 	var country1 = req.params.country;
 	var year1 = req.params.year;
+	
 	db.find({country: country1, year: Number(year1)}, (err,gce)=>{
-
-		gce.forEach((c)=>{ 
-			delete c._id;
-		})
-		
+		deleteIDs(gce);
 		res.send(JSON.stringify(gce,null,2));
-		
 		console.log("Data sent:"+JSON.stringify(gce,null,2));
 	});
+	
 });
 // POST 
 app.post(BASE_API_URL+"/gce",(req,res) =>{
@@ -213,14 +220,21 @@ app.post(BASE_API_URL+"/gce",(req,res) =>{
 app.post(BASE_API_URL+"/gce/:country",(req,res) =>{
 	res.sendStatus(405,"METHOD NOT ALLOWED");
 });
+//POST yyyy/xxxx/zzzz
+app.post(BASE_API_URL+"/gce/:country/:year",(req,res) =>{
+	res.sendStatus(405,"METHOD NOT ALLOWED");
+});
 	
 // DELETE 
 app.delete(BASE_API_URL+"/gce", (req,res) =>{
 	db.remove({}, { multi: true }, function (err, numRemoved) {
-	 });	
-	res.send("DELETED DATA BASE");
-});	
-	
+		if (numRemoved!=0) {
+        	res.sendStatus(200, "DELETED DATA BASE");
+    	}else{
+        	res.sendStatus(404, "DATA BASE NOT FOUND");
+    	}
+	});	
+});
 // DELETE yyyy/XXX
 
 app.delete(BASE_API_URL+"/gce/:country", (req,res)=>{
@@ -229,13 +243,11 @@ app.delete(BASE_API_URL+"/gce/:country", (req,res)=>{
 	
 	db.remove({country:country1}, { multi: true }, function (err, numRemoved) {
 		if(numRemoved!=0){
-		res.sendStatus(200);
-	}else{
-		res.sendStatus(404,"COUNTRY NOT FOUND");
-	}
-	});
-	
-	
+			res.sendStatus(200, "DELETED COUNTRY");
+    	}else{
+        	res.sendStatus(404, "COUNTRY NOT FOUND");
+    	}
+	});	
 });	
 // DELETE yyyy/XXX/zzz
 
@@ -245,10 +257,10 @@ app.delete(BASE_API_URL+"/gce/:country/:year", (req,res)=>{
 	var year1 = req.params.year;
 	db.remove({country:country1, year: Number(year1)}, {}, function (err, numRemoved) {
 		if(numRemoved!=0){
-		res.sendStatus(200);
-	}else{
-		res.sendStatus(404,"COUNTRY AND YEAR NOT FOUND");
-	}
+			res.sendStatus(200, "DELETED COUNTRY");
+    	}else{
+        	res.sendStatus(404, "COUNTRY NOT FOUND");
+    	}
 	});
 });	
 //PUT yyyy
@@ -263,9 +275,7 @@ app.put(BASE_API_URL+"/gce/:country", (req,res)=>{
 	var body = req.body;
 	
 	db.find({country1,year1}, (err, gce) => {
-		gce.forEach((c) => {
-			delete c._id;
-		});
+		deleteIDs(gce);
 		if(gce.length >= 1){
 			db.update({country: country1,year:year1}, body, (error, numRemoved) => {
 				res.sendStatus(200, "OK");
@@ -283,9 +293,7 @@ app.put(BASE_API_URL+"/gce/:country/:year", (req,res)=>{
 	var body = req.body;
 	
 	db.find({country: country1, year: Number(year1)}, (err, gce) => {
-		gce.forEach((c) => {
-			delete c._id;
-		});
+		deleteIDs(gce);
 		if(gce.length >= 1){
 			db.update({country: country1,year:Number(year1)}, body, (error, numRemoved) => {
 				res.sendStatus(200, "OK");
@@ -295,5 +303,5 @@ app.put(BASE_API_URL+"/gce/:country/:year", (req,res)=>{
 		}
 	});
 });	
-	
+	console.log("GCE OK");  
 };

@@ -1,219 +1,224 @@
-module.exports = function(app){
+module.exports = function(app) {
+	console.log('Registering ec API');
 	const dataStore = require("nedb");
 	const path = require("path");
 	const dbFileName = path.join(__dirname,"ec.db");
 	const db2 = new dataStore({
                 filename: dbFileName,
 				autoload: true
-});
-	
-	const BASE_API_URL = "/api/v1";
-	var initialec =[
-	{
-		country: "Sweden",
-		year: 2014,
-		eev:8076,
-		ms:1.53,
-		eec:135002
-	},
-	{
-		country: "France",
-		year: 2014,
-		eev:43605,
-		ms:1.2,
-		eec:489944
-	},
-	{
-		country: "United Kingdom",
-		year: 2014,
-		eev:24500,
-		ms:1.1,
-		eec:345068
-	},
-	{
-		country: "United States",
-		year: 2014,
-		eev:291332,
-		ms:0.72,
-		eec:172000
-	},
-	{
-		country: "China",
-		year: 2014,
-		eev:83198,
-		ms:0.23,
-		eec:28619
-	}
-	
-];
-app.get(BASE_API_URL+"/ec/loadInitialData",(req,res) =>{
- console.log("New GET .../loadInitialData");
- 	db2.remove({}, { multi: true }, function (err, numRemoved) {
-	 });
-	db2.insert(initialec);
-	res.sendStatus(200);
-	
- console.log("Initial Ec loaded:"+JSON.stringify(initialec,null,2));
-});
-	
-// GET 
-app.get(BASE_API_URL+"/ec", (req,res) =>{
-	console.log("New GET .../ec");
-	
-	db2.find({}, (err,ec)=>{
-		
-		ec.forEach((c)=>{ 
-			delete c._id;
-		})
-		
-		res.send(JSON.stringify(ec,null,2));
-		
-		console.log("Data sent:"+JSON.stringify(ec,null,2));
 	});
-});
-	
-// GET yyyy/XXX
-app.get(BASE_API_URL+"/ec/:country", (req,res)=>{
-	
-	console.log("New GET .../ec");
-	var country1 = req.params.country;
-	db2.find({country: country1}, (err,ec)=>{
-		
-		ec.forEach((c)=>{ 
-			delete c._id;
-		})
-		
-		res.send(JSON.stringify(ec,null,2));
-		
-		console.log("Data sent:"+JSON.stringify(ec,null,2));
-	});
-});	
-	
-// GET yyyy/XXX/zzz	
 	
 
-app.get(BASE_API_URL+"/ec/:country/:year", (req,res)=>{
-	
-	console.log("New GET .../ec");
-	var country1 = req.params.country;
-	var year1 = req.params.year;
-	db1.find({country: country1, year: Number(year1)}, (err,ec)=>{
-		
-		ec.forEach((c)=>{ 
-			delete c._id;
-		})
-		
-		res.send(JSON.stringify(ec,null,2));
-		
-		console.log("Data sent:"+JSON.stringify(ec,null,2));
-	});
-});	
-// POST 	
-app.post(BASE_API_URL+"/ec",(req,res) =>{
-	
-	var newEC = req.body;
-	
-	if((newEC == "") || (newEC.country == null)||(newEC.year == null)||(newEC.eev == null)||(newEC.ms == null)||(newEC.eec == null)){
-		res.sendStatus(400,"BAD REQUEST");
-	} else {
-		db1.insert(newEC);	
-		res.sendStatus(201,"CREATED");
-	}
-});	
-	
-//POST yyyy/xxxx
-	
-app.post(BASE_API_URL+"/ec/:country",(req,res) =>{
-	res.sendStatus(405,"METHOD NOT ALLOWED");
-});
+	var initialData = [
+		{
+			country: 'sweden',
+			year: 2014,
+			eev: 8076,
+			ms: 1.53,
+			eec: 135002
+		},
+		{
+			country: 'france',
+			year: 2014,
+			eev: 43605,
+			ms: 1.2,
+			eec: 489944
+		},
+		{
+			country: 'united kingdom',
+			year: 2014,
+			eev: 24500,
+			ms: 1.1,
+			eec: 135002
+		},
+		{
+			country: 'united states',
+			year: 2014,
+			eev: 291332,
+			ms: 0.72,
+			eec: 172000
+		},
+		{
+			country: 'china',
+			year: 2014,
+			eev: 81298,
+			ms: 0.23,
+			eec: 28619
+		},
+		{
+			country: 'canada',
+			year: 2015,
+			eev: 3456,
+			ms: 0.34,
+			eec: 14563
+		}
+	];
 
-// DELETE 	
-app.delete(BASE_API_URL+"/ec", (req,res) =>{
-	db2.remove({}, { multi: true }, function (err, numRemoved) {
-	 });	
-	res.send("DELETED DATA BASE");
-});	
-	
-// DELETE yyyy/XXX	
-app.delete(BASE_API_URL+"/ec/:country", (req,res)=>{
-	
-	var country1 = req.params.country;
-	
-	db2.remove({country:country1}, { multi: true }, function (err, numRemoved) {
-		if(numRemoved!=0){
-		res.sendStatus(200);
-	}else{
-		res.sendStatus(404,"COUNTRY NOT FOUND");
+	const BASE_API_URL = '/api/v1';
+
+	function checkJSON(data) {
+		return (
+			data.country != null &&
+			data.year != null &&
+			data.eev != null &&
+			data.ms != null &&
+			data.eec != null
+		);
 	}
-	});
-	
-});	
-// DELETE yyyy/XXX/zzz	
-app.delete(BASE_API_URL+"/ec/:country/:year", (req,res)=>{
-	
-	var country1 = req.params.country;
-	var year1 = req.params.year;
-	db2.remove({country:country1, year: Number(year1)}, {}, function (err, numRemoved) {
-		if(numRemoved!=0){
-		res.sendStatus(200);
-	}else{
-		res.sendStatus(404,"COUNTRY AND YEAR NOT FOUND");
-	}
-	});
-	
-});	
-//PUT yyyy	
-app.put(BASE_API_URL+"/ec", (req,res)=>{
-	res.sendStatus(405,"METHOD NOT ALLOWED");
-});	
-// PUT yyyy/XXX
-	app.put(BASE_API_URL+"/ec/:country", (req,res)=>{
-	
-	var country = req.params.country;
-	var year = req.params.year;
-	var newCountryYear= req.body;
-	var filteredCountryYear = ec.filter((c) => {
-		return (c.country == country&&c.year==year);
-	});
-	if(filteredCountryYear.length==1){
-		var updateData = ec.map((e) => {
-			var upData = e;
-			if(e.country==country && e.year==year){
-				for(var p in newCountryYear){
-					upData[p] = newCountryYear[p];
-				}
-			}
-			return(updateData);
-		});
-		
-		ec.push(updateData);
-		res.sendStatus(200,"Data Modified");
-	}else{
-		res.sendStatus(404,"Data Not Found");
-	}
-});	
-// PUT yyyy/XXX/zzz	
-app.put(BASE_API_URL+"/ec/:country/:year", (req,res)=>{
-	
-	var country1 = req.params.country;
-	var year1 = req.params.year;
-	var body = req.body;
-	
-	db2.find({country: country1, year: Number(year1)}, (err, ec) => {
-		ec.forEach((c) => {
-			delete c._id;
-		});
-		if(ec.length >= 1){
-			db2.update({country: country1,year:Number(year1)}, body, (error, numRemoved) => {
-				res.sendStatus(200, "OK");
-			})
-		}else{
-			res.sendStatus(404,"ERROR. Pais no encontrado.");
+
+	app.post(BASE_API_URL + '/ec-stats', (req, res) => {
+		console.log(req.body);
+		if (checkJSON(req.body)) {
+			db2.insert(req.body);
+			res.sendStatus(201, 'CREATED');
+		} else {
+			res.sendStatus(400, 'BAD REQUEST');
 		}
 	});
-});	
-	
-	
-	
-	
+
+	app.get(BASE_API_URL + '/ec-stats', (req, res) => {
+		var rlimit = req.query.limit;
+		var roffset = req.query.offset;
+		var rcountry = req.query.country;
+		var ryear = req.query.year;
+		var reev = req.query.eev;
+		var rms = req.query.ms;
+		var reec = req.query.eec;
+
+		db2.find({}, (err, row) => {
+			row.forEach(r => {
+				delete r._id;
+			});
+
+			var frows = row;
+
+			if (rcountry != undefined) {
+				frows = frows.filter(r => {
+					return r.country == rcountry;
+				});
+			}
+
+			if (ryear != undefined) {
+				frows = frows.filter(r => {
+					return r.year == ryear;
+				});
+			}
+
+			if (reev != undefined) {
+				frows = frows.filter(r => {
+					return r.eev == reev;
+				});
+			}
+
+			if (rms != undefined) {
+				frows = frows.filter(r => {
+					return r.ms == rms;
+				});
+			}
+
+			if (reec != undefined) {
+				frows = frows.filter(r => {
+					return r.eec == reec;
+				});
+			}
+
+			if (roffset != undefined) {
+				var newFrows = [];
+
+				for (i = roffset; i < frows.length; i++) {
+					newFrows.push(frows[i]);
+				}
+
+				frows = newFrows;
+			}
+
+			if (rlimit != undefined) {
+				var newFrows = [];
+
+				for (i = 0; i < rlimit; i++) {
+					newFrows.push(frows[i]);
+				}
+
+				frows = newFrows;
+			}
+
+			res.send(JSON.stringify(frows, null, 2));
+			console.log('Data is' + JSON.stringify(frows, null, 2));
+			console.log(rcountry);
+		});
+	});
+
+	app.delete(BASE_API_URL + '/ec-stats/:country/:year', (req, res) => {
+		var country = req.params.country;
+		var year = req.params.year;
+
+		db2.find({}, (err, rows) => {
+			var frows = rows.filter(r => {
+				return r.country == country && r.year == year;
+			});
+
+			if (frows.length >= 1) {
+				var idr = frows[0]._id;
+				db2.remove({ _id: idr }, {}, function(err, numRemoved) {});
+				res.sendStatus(200, 'REMOVED');
+			} else {
+				res.sendStatus(404, 'ROW NOT FOUND');
+			}
+		});
+	});
+
+	app.put(BASE_API_URL + '/ec-stats/:country/:year', (req, res) => {
+		if (checkJSON(req.body)) {
+			var country = req.params.country;
+			var year = req.params.year;
+
+			db2.find({}, (err, rows) => {
+				var frows = rows.filter(r => {
+					return r.country == country && r.year == year;
+				});
+
+				if (frows.length >= 1) {
+					var idr = frows[0]._id;
+					db2.remove({ _id: idr }, {}, function(err, numRemoved) {});
+					db2.insert(req.body);
+					res.sendStatus(200, 'UPDATED');
+				} else {
+					res.sendStatus(404, 'ROW NOT FOUND');
+				}
+			});
+		} else {
+			res.sendStatus(400, 'BAD REQUEST');
+		}
+	});
+
+	app.get(BASE_API_URL + '/ec-stats/loadInitialData', (req, res) => {
+		console.log('Now get loadInitialData');
+
+		db2.remove({}, { multi: true }, function(err, numRemoved) {});
+
+		db2.insert(initialData);
+		res.sendStatus(200);
+		console.log('Initial Contacts Loaded' + JSON.stringify(initialData, null, 2));
+	});
+
+	app.get(BASE_API_URL + '/ec-stats/:country/:year', (req, res) => {
+		var country = req.params.country;
+		var year = req.params.year;
+
+		db2.find({}, (err, rows) => {
+			rows.forEach(r => {
+				delete r._id;
+			});
+
+			var frows = rows.filter(r => {
+				return r.country == country && r.year == year;
+			});
+
+			if (frows.length >= 1) {
+				res.send(frows[0]);
+			} else {
+				res.sendStatus(404, 'ROW NOT FOUND');
+			}
+		});
+	});
 };
