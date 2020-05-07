@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "file": "bundle.css",
+  "sources": [
+    "..\\..\\Home.svelte"
+  ],
+  "sourcesContent": [
+    "<main>\r\n\r\n\t<div class=\"div-home\" style=\"text-align:center\">\r\n\t\t<button type=\"button\"   class=\"btn btn-outline-success\"  onclick=\"window.location.href='#/ppaAPI'\"> API de PPA</button>\r\n\t\t<button type=\"button\"   class=\"btn btn-outline-success\"  onclick=\"window.location.href='#/gceAPI'\"> API de GCE</button>\r\n\t\t<button type=\"button\"   class=\"btn btn-outline-success\"  onclick=\"window.location.href='#*'\"> API de EC</button>\r\n\t</div>\r\n</main>\r\n<style>\r\n\t.btn-outline-success {\r\n\t\tmargin-top: 50px;\r\n\t\tmargin-left: 20px;\r\n\t\tcolor: blue;\r\n\t\tborder-color: #040661;\r\n\t\tbackground-color: #9DFCE9;\r\n\t\tborder-radius: 20px;\r\n\t\tpadding: 10px;\r\n\t\tfont-weight: 700;\r\n\t\tfont-size: 40px;\r\n\t}\r\n\t\r\n\t.btn-outline-success:hover {\r\n\t\tcolor: #9DFCE9;\r\n\t\tborder-color: #040661;\r\n\t\tbackground-color: blue;\r\n\t}\r\n\t</style>\r\n\t"
+  ],
+  "names": [],
+  "mappings": "AASC,oBAAoB,cAAC,CAAC,AACrB,UAAU,CAAE,IAAI,CAChB,WAAW,CAAE,IAAI,CACjB,KAAK,CAAE,IAAI,CACX,YAAY,CAAE,OAAO,CACrB,gBAAgB,CAAE,OAAO,CACzB,aAAa,CAAE,IAAI,CACnB,OAAO,CAAE,IAAI,CACb,WAAW,CAAE,GAAG,CAChB,SAAS,CAAE,IAAI,AAChB,CAAC,AAED,kCAAoB,MAAM,AAAC,CAAC,AAC3B,KAAK,CAAE,OAAO,CACd,YAAY,CAAE,OAAO,CACrB,gBAAgB,CAAE,IAAI,AACvB,CAAC"
+}
