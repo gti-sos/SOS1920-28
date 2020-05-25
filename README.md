@@ -10,7 +10,7 @@
 - **URL**: [http://sos1920-28.herokuapp.com](http://sos1920-28.herokuapp.com)
 -  **HEROKU**:
     - [https://sos1920-28.herokuapp.com/api/v1/gce](https://sos1920-28.herokuapp.com/api/v1/gce) (developed by [Rubén Navarro López](https://github.com/jolaru21))
-    - [https://sos1920-28.herokuapp.com/api/v1/ppa](https://sos1920-28.herokuapp.com/api/v1/ppa) (developed by [Fernando Campos Olías](https://github.com/Fercamoli))
+    - [https://sos1920-28.herokuapp.com/api/v1/ppas](https://sos1920-28.herokuapp.com/api/v1/ppas) (developed by [Fernando Campos Olías](https://github.com/Fercamoli))
     - [https://sos1920-28.herokuapp.com/api/v1/ec-stats](https://sos1920-28.herokuapp.com/api/v1/ec-stats) (developed by [Alejandro Camacho Arias](https://github.com/sain120))
 -  **POSTMAN**:
     - [https://documenter.getpostman.com/view/10637473/Szf3bW1p](https://documenter.getpostman.com/view/10637473/Szf3bW1p?version=latest) (developed by [Rubén Navarro López](https://github.com/jolaru21))
